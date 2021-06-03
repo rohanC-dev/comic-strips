@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <title>Comic Strip</title>
+        <!-- BOOTSRAP-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+
+        <link rel = "stylesheet" href = "/stylesheets/main.css">
+
+
+    </head>
+
+    <body>
+        
+
+        <!-- <div class  = "row" style="display:flex; flex-wrap: wrap; padding-top: 30px;">
+            <form action = "/prev" method = "POST" style="display:flex;" >
+                <button class = "btn btn-primary">prev</button>
+            </form>
+            <form action = "/next" method = "POST" style="display:flex;" >
+                <button class = "btn btn-primary">next</button>
+            </form>
+            <form action = "/random" method = "POST" style="display:flex;" >
+                <button class = "btn btn-primary">random</button>
+            </form>
+        </div> -->
+
+
+    
+        <div class="d-flex justify-content-around">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <form action = "/prev" method = "POST" >
+                    <button type="submit" class="btn btn-primary menu-btns">prev</button>
+                </form>
+                
+                <form action = "/random" method = "POST" >
+                    <button type="submit" class="btn btn-primary menu-btns">random</button>
+                </form>
+    
+                <form action = "/next" method = "POST" >
+                    <button type="submit" class="btn btn-primary menu-btns">next</button>
+                </form>
+            </div>
+        </div>
+
+        
+
+        <div class="d-flex justify-content-around">
+            <h1> <%=  data.safe_title %> - # <%= data.num %> </h1>
+        </div>
+
+        
+
+        <div class = "container">
+            <div class="card text-center">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between">
+                        <p>views: <%= views %></p>
+                        <p> <%= data.day %> / <%= data.month %> / <%= data.year %></p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <img src = "<%=data.img%>" class="img-fluid">
+                </div>
+                <div class="card-footer text-muted">
+                    <p> <%= data.alt %></p>
+                </div>
+            </div>
+        </div>
+        
+        
+
+
+
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous"></script>
+    </body>
+</html>
