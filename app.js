@@ -40,7 +40,7 @@ app.post("/random", function(req, res){
 app.get("/comic/:num", function(req, res){
     currentComic = Number(req.params.num);
     if(currentComic > 2471){
-        res.send("too big");
+        res.render("not-found.ejs");
     }
     console.log(currentComic);
     request("https://xkcd.com/" + currentComic + "/info.0.json", function(error, response, body){
@@ -85,6 +85,8 @@ app.get("/comic/:num", function(req, res){
 		}
 	});
 });
+
+
 
 app.listen(process.env.PORT || 3000, process.env.IP, function () {
     console.log("server started");
