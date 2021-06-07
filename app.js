@@ -91,8 +91,18 @@ app.get("/comic/:num", function(req, res){
 
 
 function getFullTitle(splitTranscriptString){
-    var fullTitle = splitTranscriptString[splitTranscriptString.length-1];
-    return fullTitle.substring(2+12, fullTitle.length-2);
+
+    var fullTitle;
+    for(var i = splitTranscriptString.length-1; i > 0; i--){
+        if(splitTranscriptString[i].charAt(0) == '{'){
+            fullTitle = splitTranscriptString[i];
+        }
+    }
+    if(fullTitle){
+        return fullTitle.substring(2+12, fullTitle.length-2);
+    }else{
+        return "";
+    }
 }
 
 function parseTranscript(body){
@@ -116,7 +126,7 @@ function parseTranscript(body){
                 string: splitTranscriptString[i].substring(2, splitTranscriptString[i].length-2),
                 type: "<"
             });
-        }else if(splitTranscriptString[i].charAt(0) != '[' || splitTranscriptString[i].charAt(0) != '<' ){
+        }else if(splitTranscriptString[i].charAt(0) != '[' || splitTranscriptString[i].charAt(0) != '<'){
             
             formattedTranscript.push({
                 string: splitTranscriptString[i],
