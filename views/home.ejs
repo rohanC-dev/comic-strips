@@ -44,7 +44,11 @@
         </div>
 
         <div class="d-flex justify-content-around">
-            <h1> <%=  data.safe_title %></h1>
+            <% if(data.transcript == ""){ %>
+                <h1> <%=  data.safe_title %></h1>
+            <% }else{ %>
+                <h4> <%=  fullTitle %></h4>
+            <% } %>
         </div>
 
         
@@ -70,7 +74,18 @@
                     <% if(data.transcript == ""){ %>
                         <h6> <%= data.alt %></h6>
                     <% }else{ %>
-                        <h6> <%= data.transcript %> </h6>
+                        
+                        <% for(var i = 0; i < fullTranscript.length; i++){ %>
+
+                            <% if(fullTranscript[i].type == "["){ %>
+                                <h6> <b><%= fullTranscript[i].string %></b> </h6>
+                            <% }else if(fullTranscript[i].type == "<"){ %>
+                                <h6> <i><%= fullTranscript[i].string %></i> </h6>
+                            <% }else if(fullTranscript[i].type == "dialogue"){ %>
+                                <h6> <%= fullTranscript[i].string %> </h6>
+                            <% } %>
+                            
+                        <% } %>
                     <% } %>
                 </div>
                 

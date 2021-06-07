@@ -49,7 +49,7 @@ app.get("/comic/:num", function(req, res){
 
             //res.render("home.ejs", {data: JSON.parse(body)});
             //splitTranscript(body);
-            //parseTranscript(body);
+            parseTranscript(body);
             
             Comic.find({id: currentComic}, function(err, retrievedComic){
                 if(err){
@@ -68,8 +68,7 @@ app.get("/comic/:num", function(req, res){
                                         console.log("there was an error");
                                         console.log(err); 
                                     }
-                                    res.render("home.ejs", {data: JSON.parse(body), views: updatedComic.views});
-                                    splitTranscript(body);   
+                                    res.render("home.ejs", {data: JSON.parse(body), views: updatedComic.views, fullTranscript: parseTranscript(body), fullTitle: getFullTitle(JSON.parse(body).transcript.split("\n"))}); 
                                 });
                             }
                         });
@@ -79,8 +78,7 @@ app.get("/comic/:num", function(req, res){
                                 console.log("there was an error");
                                 console.log(err); 
                             }
-                            res.render("home.ejs", {data: JSON.parse(body), views: updatedComic.views});
-                            splitTranscript(body);   
+                            res.render("home.ejs", {data: JSON.parse(body), views: updatedComic.views, fullTranscript: parseTranscript(body), fullTitle: getFullTitle(JSON.parse(body).transcript.split("\n"))});
                         });
                     }
 
@@ -91,85 +89,43 @@ app.get("/comic/:num", function(req, res){
 	});
 });
 
-function splitTranscript(body){
-    var transcriptString = JSON.parse(body).transcript;
-    var linesOfTranscript = [];
-    for(var i = 0; i < transcriptString.length; i++){
-        if(transcriptString.substring(i, i+1) === "\n"){
-            var j = i+2;
-            while(transcriptString.charAt(j) != "\\" && transcriptString.charAt(j+1) != "n"){
-                j++;
-            }
 
-            linesOfTranscript.push({
-                string: transcriptString.substring(i+2,j)
-            });
-        }
-    }
-
-    //console.log(linesOfTranscript);
-
-    var strings = transcriptString.split("\n");
-    console.log(strings);
-
-
+function getFullTitle(splitTranscriptString){
+    var fullTitle = splitTranscriptString[splitTranscriptString.length-1];
+    return fullTitle.substring(2+12, fullTitle.length-2);
 }
-
-
 
 function parseTranscript(body){
     //console.log(JSON.parse(body).transcript);
     var transcriptString = JSON.parse(body).transcript;
-    console.log(transcriptString);
+    var splitTranscriptString = transcriptString.split("\n");
+
     var formattedTranscript = [];
 
-    for(var i = 0; i < transcriptString.length; i++){
-        // if(transcriptString.charAt(i).localCompare("[") == 0 && transcriptString.charAt(i+1).localCompare("[") == 0){
-        //     while(transcriptString.charAt(i).localCompare("]") == 0){
-        //         console.log(transcriptString.charAt(i));
-        //     }
-        // }
-        if(transcriptString.charAt(i) === "[" && transcriptString.charAt(i+1) === "["){
-            
-            var j;
-            for(j = i; transcriptString.charAt(j) != "]"; j++){
-                //console.log(transcriptString.charAt(j));
-            }
+    for(var i = 0; i < splitTranscriptString.length; i++){
+        if(splitTranscriptString[i].charAt(0) == '['){
+
             formattedTranscript.push({
-                string: transcriptString.substring(i+2,j),
+                string: splitTranscriptString[i].substring(2, splitTranscriptString[i].length-2),
                 type: "["
             });
 
-        }else if(transcriptString.charAt(i) === "<" && transcriptString.charAt(i+1) === "<"){
-            var j;
-            for(j = i; transcriptString.charAt(j) != ">"; j++){
-                //console.log(transcriptString.charAt(j));
-            }
+        }else if(splitTranscriptString[i].charAt(0) == '<'){
+            
             formattedTranscript.push({
-                string: transcriptString.substring(i+2,j),
+                string: splitTranscriptString[i].substring(2, splitTranscriptString[i].length-2),
                 type: "<"
             });
-        }else if(transcriptString.charAt(i) === ":"){
-            var j;
+        }else if(splitTranscriptString[i].charAt(0) != '[' || splitTranscriptString[i].charAt(0) != '<' ){
             
-            for(j = i; (transcriptString.substring(j-1, j) != "\n"); j--){
-                
-                //console.log(transcriptString.charAt(j));
-            }
-
-            for(k = j; transcriptString.charAt(k) != "\\"; k++){
-                //console.log(transcriptString.charAt(j));
-            }
-
             formattedTranscript.push({
-                string: transcriptString.substring(j,k),
+                string: splitTranscriptString[i],
                 type: "dialogue"
             });
-
         }
     }
     console.log(formattedTranscript);
-    return transcriptString;
+    return formattedTranscript;
 }
 
 app.listen(process.env.PORT || 3000, process.env.IP, function () {
