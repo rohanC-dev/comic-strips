@@ -32,7 +32,6 @@ app.post("/next", function(req, res){
 });
 
 app.post("/random", function(req, res){
-    console.log("random: " + currentComic);
     currentComic = Math.floor(Math.random() * 2471) + 1;
     res.redirect("/comic/" + currentComic);
 });
@@ -42,12 +41,13 @@ app.get("/comic/:num", function(req, res){
     if(currentComic > 2471){
         res.render("not-found.ejs");
     }
-    console.log(currentComic);
+    
     request("https://xkcd.com/" + currentComic + "/info.0.json", function(error, response, body){
 		if(!error && response.statusCode == 200){
 
-            //res.render("home.ejs", {data: JSON.parse(body)}); 
+            //res.render("home.ejs", {data: JSON.parse(body)});
 
+            parseTranscript(body);
             Comic.find({id: currentComic}, function(err, retrievedComic){
                 if(err){
                     console.log("there was an error");
@@ -86,7 +86,43 @@ app.get("/comic/:num", function(req, res){
 	});
 });
 
+function parseTranscript(body){
+    console.log(JSON.parse(body).transcript);
+    var transcriptString = JSON.parse(body).transcript;
 
+    var formattedTranscript = [];
+
+    for(var i = 0; i < transcriptString.length; i++){
+        // if(transcriptString.charAt(i).localCompare("[") == 0 && transcriptString.charAt(i+1).localCompare("[") == 0){
+        //     while(transcriptString.charAt(i).localCompare("]") == 0){
+        //         console.log(transcriptString.charAt(i));
+        //     }
+        // }
+        if(transcriptString.charAt(i) === "[" && transcriptString.charAt(i+1) === "["){
+            
+            var j;
+            for(j = i; transcriptString.charAt(j) != "]"; j++){
+                //console.log(transcriptString.charAt(j));
+            }
+            formattedTranscript.push({
+                string: transcriptString.substring(i+2,j),
+                type: "["
+            });
+
+        }else if(transcriptString.charAt(i) === "<" && transcriptString.charAt(i+1) === "<"){
+            var j;
+            for(j = i; transcriptString.charAt(j) != ">"; j++){
+                //console.log(transcriptString.charAt(j));
+            }
+            formattedTranscript.push({
+                string: transcriptString.substring(i+2,j),
+                type: "<"
+            });
+        }
+    }
+    console.log(formattedTranscript);
+    
+}
 
 app.listen(process.env.PORT || 3000, process.env.IP, function () {
     console.log("server started");

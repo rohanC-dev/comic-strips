@@ -43,8 +43,6 @@
             </div>
         </div>
 
-        
-
         <div class="d-flex justify-content-around">
             <h1> <%=  data.safe_title %></h1>
         </div>
@@ -69,7 +67,11 @@
                     <img src = "<%=data.img%>" class="img-fluid">
                 </div>
                 <div class="card-footer">
-                    <h6> <%= data.alt %></h6>
+                    <% if(data.transcript == ""){ %>
+                        <h6> <%= data.alt %></h6>
+                    <% }else{ %>
+                        <h6> <%= data.transcript %> </h6>
+                    <% } %>
                 </div>
             </div>
         </div>
