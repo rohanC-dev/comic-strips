@@ -99,6 +99,12 @@ function getFullTitle(splitTranscriptString){
         }
     }
     if(fullTitle){
+        // var i = 0;
+        // console.log(fullTitle);
+        // while(fullTitle.charAt(i) != ':'){
+        //     //console.log(fullTitle.charAt(i) != ':');
+        //     i++;
+        // }
         return fullTitle.substring(2+12, fullTitle.length-2);
     }else{
         return "";
@@ -126,6 +132,23 @@ function parseTranscript(body){
                 string: splitTranscriptString[i].substring(2, splitTranscriptString[i].length-2),
                 type: "<"
             });
+        }else if(splitTranscriptString[i].charAt(0) == '{'){
+
+            formattedTranscript.push({
+                string: splitTranscriptString[i].substring(2, splitTranscriptString[i].length-2),
+                type: "{"
+            });
+            if(i < splitTranscriptString.length-1){
+                var checkNext = splitTranscriptString[i+1].slice(-1);
+                if(checkNext == '}'){
+                formattedTranscript.push({
+                    string: splitTranscriptString[i+1].substring(0, splitTranscriptString[i].length-2),
+                    type: "{"
+                });
+                i++;
+            }
+            }
+            
         }else if(splitTranscriptString[i].charAt(0) != '[' || splitTranscriptString[i].charAt(0) != '<'){
             
             formattedTranscript.push({

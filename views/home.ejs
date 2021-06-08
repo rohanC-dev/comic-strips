@@ -43,11 +43,23 @@
             </div>
         </div>
 
-        <div class="d-flex justify-content-around">
+        <div class="d-flex justify-content-around container">
             <% if(fullTitle == ""){ %>
                 <h1> <%=  data.safe_title %></h1>
             <% }else{ %>
-                <h4> <%=  fullTitle %></h4>
+                <% var count = 0; %>
+                <% for(var i = 0; i < fullTranscript.length; i++){ %>
+                    <% if(fullTranscript[i].type == "{"){ %>
+                        <% count++; %>
+                    <% } %>
+                <% } %>
+                
+                <% if(count > 1){ %>
+                    <h1> <%=  data.safe_title %></h1>
+                <% }else if(count <= 1){ %>
+                    <h4> <%=  fullTitle %></h4>
+                <% } %>
+
             <% } %>
         </div>
 
