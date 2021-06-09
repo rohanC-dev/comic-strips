@@ -1,5 +1,4 @@
 const { json } = require("body-parser");
-const axios = require('axios');
 var express = require("express"),
         app = express(),
   mongoose  = require("mongoose"),
@@ -8,7 +7,6 @@ var express = require("express"),
   mongoose  = require("mongoose"),
 
       Comic = require("./models/comic");
-currentComic = require("./models/currentComic");   
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
@@ -17,25 +15,11 @@ app.use(express.static(__dirname + "/public"));
 //mongoose.connect("mongodb://localhost:27017/comic", { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connect("mongodb+srv://comic_strip1:7fgsA@aGd9Y8-eK@cluster0.bebi9.mongodb.net/Cluster0?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true });
 
-// var maxNum = request("https://xkcd.com/info.0.json", function(error, response, body){
-//         if(!error && response.statusCode == 200){
-//             maxNum = JSON.parse(body).num;
-            
-//         }
-//         return JSON.parse(body).num;;
-// });
 
-// console.log(maxNum);
-
+const axios = require("axios");
 let promise = axios.get("https://xkcd.com/info.0.json").then(res => res.data)
 
 
-
-
-
-
-
-//var currentComic = Math.floor(Math.random() * Number()) + 1;;
 app.get("/", function(req, res){
     promise.then(data => {
         var currentComic = Math.floor(Math.random() * Number(data.num)) + 1;
@@ -122,7 +106,7 @@ function getFullTitle(splitTranscriptString){
     }
 
     if(fullTitle){
-        console.log(fullTitle.substring(2, 7));
+        
         if(fullTitle.substring(2, 7).toLowerCase() != "title"){
             return "";
         }
