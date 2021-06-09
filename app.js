@@ -1,5 +1,5 @@
 const { json } = require("body-parser");
-
+const axios = require('axios');
 var express = require("express"),
         app = express(),
   mongoose  = require("mongoose"),
@@ -8,19 +8,40 @@ var express = require("express"),
   mongoose  = require("mongoose"),
 
       Comic = require("./models/comic");
+currentComic = require("./models/currentComic");   
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(__dirname + "/public"));
 
 
-// mongoose.connect("mongodb://localhost:27017/comic", { useNewUrlParser: true, useUnifiedTopology: true });
+//mongoose.connect("mongodb://localhost:27017/comic", { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.connect("mongodb+srv://comic_strip1:7fgsA@aGd9Y8-eK@cluster0.bebi9.mongodb.net/Cluster0?retryWrites=true&w=majority", { useNewUrlParser: true, useUnifiedTopology: true });
 
+// var maxNum = request("https://xkcd.com/info.0.json", function(error, response, body){
+//         if(!error && response.statusCode == 200){
+//             maxNum = JSON.parse(body).num;
+            
+//         }
+//         return JSON.parse(body).num;;
+// });
 
-var currentComic = Math.floor(Math.random() * 2471) + 1;
+// console.log(maxNum);
 
+let promise = axios.get("https://xkcd.com/info.0.json").then(res => res.data)
+
+
+
+
+
+
+
+//var currentComic = Math.floor(Math.random() * Number()) + 1;;
 app.get("/", function(req, res){
-    res.redirect("/comic/" + currentComic)
+    promise.then(data => {
+        var currentComic = Math.floor(Math.random() * Number(data.num)) + 1;
+        res.redirect("/comic/" + currentComic)
+    
+    });
 });
 
 app.post("/prev", function(req, res){
@@ -34,23 +55,24 @@ app.post("/next", function(req, res){
 });
 
 app.post("/random", function(req, res){
-    currentComic = Math.floor(Math.random() * 2471) + 1;
-    res.redirect("/comic/" + currentComic);
+    promise.then(data => {
+        var currentComic = Math.floor(Math.random() * Number(data.num)) + 1;
+        res.redirect("/comic/" + currentComic)
+    });
 });
 
 app.get("/comic/:num", function(req, res){
     currentComic = Number(req.params.num);
-    if(currentComic > 2471){
-        res.render("not-found.ejs");
-    }
+    promise.then(data => {
+        if(currentComic > data.num){
+            res.render("not-found.ejs");
+        }
+    });
+    
     
     request("https://xkcd.com/" + currentComic + "/info.0.json", function(error, response, body){
 		if(!error && response.statusCode == 200){
-
-            //res.render("home.ejs", {data: JSON.parse(body)});
-            //splitTranscript(body);
-            parseTranscript(body);
-            
+   
             Comic.find({id: currentComic}, function(err, retrievedComic){
                 if(err){
                     console.log("there was an error");
@@ -98,13 +120,12 @@ function getFullTitle(splitTranscriptString){
             fullTitle = splitTranscriptString[i];
         }
     }
+
     if(fullTitle){
-        // var i = 0;
-        // console.log(fullTitle);
-        // while(fullTitle.charAt(i) != ':'){
-        //     //console.log(fullTitle.charAt(i) != ':');
-        //     i++;
-        // }
+        console.log(fullTitle.substring(2, 7));
+        if(fullTitle.substring(2, 7).toLowerCase() != "title"){
+            return "";
+        }
         return fullTitle.substring(2+12, fullTitle.length-2);
     }else{
         return "";
@@ -112,7 +133,6 @@ function getFullTitle(splitTranscriptString){
 }
 
 function parseTranscript(body){
-    //console.log(JSON.parse(body).transcript);
     var transcriptString = JSON.parse(body).transcript;
     var splitTranscriptString = transcriptString.split("\n");
 
@@ -157,11 +177,11 @@ function parseTranscript(body){
             });
         }
     }
-    console.log(formattedTranscript);
     return formattedTranscript;
 }
 
-app.listen(process.env.PORT || 3000, process.env.IP, function () {
+app.listen(process.env.PORT || 3000, process.env.IP, function (req, res) {
     console.log("server started");
+    
 });
 
