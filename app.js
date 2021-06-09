@@ -48,7 +48,7 @@ app.post("/random", function(req, res){
 app.get("/comic/:num", function(req, res){
     currentComic = Number(req.params.num);
     promise.then(data => {
-        if(currentComic > data.num){
+        if(currentComic > data.num || currentComic < 1){
             res.render("not-found.ejs");
         }
     });
